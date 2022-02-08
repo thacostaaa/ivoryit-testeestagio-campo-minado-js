@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <script src="js/campo-minado.js"></script>
+    </head>
+    <body>
+        <div id="exibir-execucao"></div>
+
+        <script>
+            var campoMinado = new CampoMinado();
+
+            document.getElementById('exibir-execucao').innerHTML += '----------- Início do jogo -----------';
+            document.getElementById('exibir-execucao').innerHTML += '<pre>' + campoMinado.Tabuleiro() + '</pre>';
+            
+            // Realize sua codificação a partir deste ponto, boa sorte!
+
+            function statusJogoAtual() {
+                if (campoMinado.JogoStatus() === 0) {
+                    document.getElementById('exibir-execucao').innerHTML += '----------- Jogo em aberto -----------';
+                }
+                else if (campoMinado.JogoStatus() === 1) {
+                    document.getElementById('exibir-execucao').innerHTML += '----------- Vitoria -----------';
+                }
+                else if (campoMinado.JogoStatus() === 2) {
+                    document.getElementById('exibir-execucao').innerHTML += '----------- Game Over -----------';
+                }
+
+                document.getElementById('exibir-execucao').innerHTML += '<pre>' + campoMinado.Tabuleiro() + '</pre>';
+            }
+
+            statusJogoAtual();
+
+            var tamanhoGrid = 9;
+
+            // Cria um array 9x9 para armazenar as bombas
+            var bombas = Array(tamanhoGrid).fill(0).map(function () {
+                return new Array(tamanhoGrid).fill(0);
+            });
+
+            function analisarCadaCasa() {
+                var tabuleiro = campoMinado.Tabuleiro().split('\r\n').map(function(linha) {
+                    return linha.split('');
+                });
+
+                for (var linha = 0; linha < tamanhoGrid; linha++) {
+                    for (var col = tamanhoGrid - 1; col >= 0; col--) {
+                        var casa = tabuleiro[linha][col];
+                        var casasVazias = [];
+                        var qtdBombas = 0;
+                    
+                        if (casa !== '-' && casa > 0) {
+                            if (linha > 0) {
+                                if (col > 0) {
+                                    // cima esquerda
+                                    if (tabuleiro[linha-1][col-1] === '-') {
+                                        casasVazias.push([linha-1, col-1]);
+                                    }
+                                }
+
+                                // cima
+                                if (tabuleiro[linha-1][col] === '-') {
+                                    casasVazias.push([linha-1, col]);
+                                }
+
+                                if (col < tamanhoGrid - 1) {
+                                    // cima direita
+                                    if (tabuleiro[linha-1][col+1] === '-') {
+                                        casasVazias.push([linha-1, col+1]);
+                                    }
+                                }
+                            }
+
+                            if (col > 0) {
+                                // esquerda
+                                if (tabuleiro[linha][col-1] === '-') {
+                                    casasVazias.push([linha, col-1]);
+                                }
+                            }
+
+                            if (col < tamanhoGrid - 1) {
+                                // direita
+                                if (tabuleiro[linha][col+1] === '-') {
+                                    casasVazias.push([linha, col+1]);
+                                }
+                            }
+
+                            if (linha < tamanhoGrid - 1) {
+                                if (col > 0) {
+                                    // baixo esquerda
+                                    if (tabuleiro[linha+1][col-1] === '-') {
+                                        casasVazias.push([linha+1, col-1]);
+                                    }
+                                }
+                            
+                                // baixo
+                                if (tabuleiro[linha+1][col] === '-') {
+                                    casasVazias.push([linha+1, col]);
+                                }
+                                
+                                if (col < tamanhoGrid - 1) {
+                                    // baixo direita
+                                    if (tabuleiro[linha+1][col+1] === '-') {
+                                        casasVazias.push([linha+1, col+1]);
+                                    }
+                                }
+                            }
+
+                            // remove casas duplicadas
+                            casasVazias = Array.from(casasVazias);
+
+                            if (casa == casasVazias.length) {
+                                casasVazias.forEach(function(casaVazia) {                                    
+                                    document.getElementById('exibir-execucao').innerHTML += '<pre>Bomba Encontrada: Linha (' + (casaVazia[0] + 1) + ') Coluna (' + (casaVazia[1] + 1) + ')</pre>';
+                                    
+                                    bombas[casaVazia[0]][casaVazia[1]] = 1;
+                                    qtdBombas++;
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            analisarCadaCasa();
+            
+        </script>
+    </body>
+</html>
